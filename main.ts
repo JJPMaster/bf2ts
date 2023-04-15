@@ -8,4 +8,4 @@ var currentCell: number = 0;
 var codeOutput;
 readline.question('', code => {
   console.log(codeOutput);
-}
+});
