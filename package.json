@@ -10,6 +10,10 @@
   "keywords": [
     "brainfuck"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JJPMaster/bf2ts.git"
+  },
   "author": "JJPMaster",
   "license": "Unlicense",
   "dependencies": {
