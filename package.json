@@ -1,6 +1,6 @@
 {
   "name": "bf2ts",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "type": "module",
   "description": "A Brainfuck interpreter in TypeScript",
   "main": "index.js",
@@ -13,6 +13,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/JJPMaster/bf2ts.git"
+  },
+  "bin": {
+    "bf2ts": "./dist/main.js",
+    "bf2tsf": "./dist/file.js"
   },
   "author": "JJPMaster",
   "license": "Unlicense",

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 //@license magnet:?xt=urn:btih:5ac446d35272cc2e4e85e4325b146d0b7ca8f50c&dn=unlicense.txt Unlicense
 const memory = new Uint8Array(30000);
 let pointer = 0;
