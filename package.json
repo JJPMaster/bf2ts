@@ -13,15 +13,10 @@
   "author": "JJPMaster",
   "license": "Unlicense",
   "dependencies": {
-    "awesome-typescript-loader": "^5.2.1",
-    "bf": "^1.0.0",
-    "brainfuck": "^1.0.2",
-    "readline": "^1.3.0",
-    "readline-sync": "^1.4.10",
-    "source-map-loader": "^4.0.1",
-    "typescript": "^5.0.4"
+    "readline-sync": "^1.4.10"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11"
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.4"
   }
 }
