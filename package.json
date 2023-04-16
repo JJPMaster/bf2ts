@@ -1,11 +1,12 @@
 {
   "name": "bf2ts",
-  "version": "1.0.5",
+  "version": "1.1",
   "type": "module",
   "description": "A Brainfuck interpreter in TypeScript",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc"
+    "build": "npx tsc",
+    "start": "npx tsc && node index.js"
   },
   "keywords": [
     "brainfuck"
@@ -15,12 +16,13 @@
     "url": "https://github.com/JJPMaster/bf2ts.git"
   },
   "bin": {
-    "bf2ts": "./dist/main.js",
-    "bf2tsf": "./dist/file.js"
+    "bf2ts": "./dist/bf2ts/main.js",
+    "bf2tsf": "./dist/bf2ts/file.js"
   },
   "author": "JJPMaster",
   "license": "Unlicense",
   "dependencies": {
+    "prompt": "^1.3.0",
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {

@@ -1,72 +1,75 @@
-#!/usr/bin/env node
-//@license magnet:?xt=urn:btih:5ac446d35272cc2e4e85e4325b146d0b7ca8f50c&dn=unlicense.txt Unlicense
 import * as fs from 'fs';
-import * as rl from 'readline-sync';
+const args = process.argv.slice(2);
+if (args.length !== 1) {
+    console.error('Please provide the name of the Brainfuck file as an argument.');
+    process.exit(1);
+}
+const fileName = args[0];
+if (!fs.existsSync(fileName)) {
+    console.error(`File not found: ${fileName}`);
+    process.exit(1);
+}
+const code = fs.readFileSync(fileName, 'utf-8');
 const memory = new Uint8Array(30000);
+const inputReceived = Array.from({ length: memory.length }, () => false);
 let pointer = 0;
-async function main() {
-    const filename = process.argv[2];
-    if (!filename) {
-        console.error('No input file specified');
-        process.exit(1);
-    }
-    const code = fs.readFileSync(filename, 'utf-8');
-    const output = await interpret(code);
-    console.log(output);
-}
-async function interpret(code) {
-    let output = '';
-    let i = 0;
-    while (i < code.length) {
-        const c = code[i];
-        switch (c) {
-            case '+':
-                memory[pointer] = (memory[pointer] + 1) % 256;
-                break;
-            case '-':
-                memory[pointer] = (memory[pointer] + 255) % 256;
-                break;
-            case '>':
-                pointer++;
-                break;
-            case '<':
-                pointer--;
-                break;
-            case '.':
-                for (let i = 0; i < memory.length; i++) {
-                    if (memory[i] !== 0) {
-                        output += String.fromCharCode(memory[i]);
-                    }
+let output = '';
+let inputMode = false;
+for (let i = 0; i < code.length; i++) {
+    const c = code[i];
+    switch (c) {
+        case '+':
+            memory[pointer] = (memory[pointer] + 1) % 256;
+            break;
+        case '-':
+            memory[pointer] = (memory[pointer] + 255) % 256;
+            break;
+        case '>':
+            pointer++;
+            break;
+        case '<':
+            pointer--;
+            break;
+        case '.':
+            output += String.fromCharCode(...memory.filter((value) => value !== 0));
+            break;
+        case ',':
+            if (!inputReceived[pointer]) {
+                const input = readInputSync();
+                for (let i = 0; i < input.length; i++) {
+                    const ascii = input.charCodeAt(i);
+                    memory[pointer + i] = ascii;
                 }
+                pointer += input.length;
+                inputReceived[pointer] = true;
+            }
+            break;
+        case '[':
+            if (memory[pointer] === 0) {
+                i = findLoopEnd(code, i);
+            }
+            break;
+        case ']':
+            if (memory[pointer] !== 0) {
+                i = findLoopStart(code, i);
+            }
+            break;
+        case '#':
+            output += memory.slice(0, 1000).join(' ') + '\n';
+            break;
+        default:
+            if (inputMode) {
                 break;
-            case ',':
-                const input = rl.question("Enter a character: ");
-                const ascii = input.charCodeAt(0);
-                memory[pointer] = ascii;
-                memory[pointer + 1] = 0; // exit the loop
-                break;
-            case '[':
-                if (memory[pointer] === 0)
-                    i = findLoopEnd(code, i);
-                break;
-            case ']':
-                if (memory[pointer] !== 0)
-                    i = findLoopStart(code, i);
-                break;
-        }
-        i++;
+            }
+            output += `;${c}`;
     }
-    return output;
 }
+console.log(output);
 function findLoopEnd(code, index) {
     let loopCounter = 0;
-    let i = index;
-    if (code[i] !== '[')
+    if (code[index] !== '[')
         throw new Error(`Expected [ at index ${index}`);
-    while (true) {
-        i++;
-        if (i >= code.length)
-            throw new Error(`Unmatched [ at index ${index}`);
+    for (let i = index + 1; i < code.length; i++) {
         if (code[i] === '[')
             loopCounter++;
         else if (code[i] === ']') {
@@ -76,16 +79,13 @@ function findLoopEnd(code, index) {
                 loopCounter--;
         }
     }
+    throw new Error(`Unmatched [ at index ${index}`);
 }
 function findLoopStart(code, index) {
     let loopCounter = 0;
-    let i = index;
-    if (code[i] !== ']')
+    if (code[index] !== ']')
         throw new Error(`Expected ] at index ${index}`);
-    while (true) {
-        i--;
-        if (i < 0)
-            throw new Error(`Unmatched ] at index ${index}`);
+    for (let i = index - 1; i >= 0; i--) {
         if (code[i] === ']')
             loopCounter++;
         else if (code[i] === '[') {
@@ -95,5 +95,9 @@ function findLoopStart(code, index) {
                 loopCounter--;
         }
     }
+    throw new Error(`Unmatched ] at index ${index}`);
 }
-main().catch(console.error);
+function readInputSync() {
+    const input = fs.readFileSync('/dev/stdin', 'utf-8');
+    return input.trim();
+}
