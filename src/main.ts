@@ -4,6 +4,7 @@ const memory = new Uint8Array(30000);
 let pointer = 0;
 import * as rl from 'readline-sync';
 process.stdin.setEncoding('utf-8');
+process.stdout.write("Enter Brainfuck code: ");
 process.stdin.once('data', async function (code: string) {
   const output = await interpret(code);
   console.log(output);
